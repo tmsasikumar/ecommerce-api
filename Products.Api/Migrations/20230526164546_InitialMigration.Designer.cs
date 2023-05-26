@@ -12,7 +12,7 @@ using Products.Api.Data;
 namespace Products.Api.Migrations
 {
     [DbContext(typeof(EcommerceContext))]
-    [Migration("20230524161330_InitialMigration")]
+    [Migration("20230526164546_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -25,6 +25,21 @@ namespace Products.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Products.Api.Models.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Products")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("Products.Api.Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -34,6 +49,9 @@ namespace Products.Api.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Inventory")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()

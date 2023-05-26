@@ -9,5 +9,6 @@ public class ProductProfileConfiguration: Profile
     public ProductProfileConfiguration()
     {
         CreateMap<ProductDto, Product>();
+        CreateMap<Product, ProductDto>();
     }
 }

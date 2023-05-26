@@ -4,14 +4,16 @@ using Products.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<EcommerceContext>(options =>
+var serviceCollection = builder.Services;
+var builderConfiguration = builder.Configuration;
+serviceCollection.AddControllers();
+serviceCollection.AddEndpointsApiExplorer();
+serviceCollection.AddSwaggerGen();
+serviceCollection.AddDbContext<EcommerceContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builderConfiguration.GetConnectionString("DefaultConnection"));
 });
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

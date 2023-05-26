@@ -22,6 +22,21 @@ namespace Products.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Products.Api.Models.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Products")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("Products.Api.Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -31,6 +46,9 @@ namespace Products.Api.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Inventory")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
