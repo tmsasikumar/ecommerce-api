@@ -1,19 +1,33 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Products.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var serviceCollection = builder.Services;
+var services = builder.Services;
 var builderConfiguration = builder.Configuration;
-serviceCollection.AddControllers();
-serviceCollection.AddEndpointsApiExplorer();
-serviceCollection.AddSwaggerGen();
-serviceCollection.AddDbContext<EcommerceContext>(options =>
+services.AddControllers();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+services.AddDbContext<EcommerceContext>(options =>
 {
     options.UseNpgsql(builderConfiguration.GetConnectionString("DefaultConnection"));
 });
-serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
+services.AddAutoMapper(Assembly.GetExecutingAssembly());
+services.AddOpenTelemetryTracing((b) =>
+{
+    b.SetResourceBuilder(
+            ResourceBuilder.CreateDefault()
+                .AddService(builder.Environment.ApplicationName)
+        ).AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(opts =>
+        {
+            opts.Endpoint = new Uri("http://localhost:4317");
+        });
+});
 
 var app = builder.Build();
 
