@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Products.Api.Data;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,10 +25,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseRouting();
+app.UseHttpMetrics();
 app.UseAuthorization();
-
 app.MapControllers();
-
+app.MapMetrics();
 app.Run();
