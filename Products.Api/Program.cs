@@ -1,19 +1,29 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Trace;
 using Products.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var serviceCollection = builder.Services;
+var services = builder.Services;
 var builderConfiguration = builder.Configuration;
-serviceCollection.AddControllers();
-serviceCollection.AddEndpointsApiExplorer();
-serviceCollection.AddSwaggerGen();
-serviceCollection.AddDbContext<EcommerceContext>(options =>
+services.AddControllers();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+services.AddDbContext<EcommerceContext>(options =>
 {
     options.UseNpgsql(builderConfiguration.GetConnectionString("DefaultConnection"));
 });
-serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
+services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+var honeycombOptions = builder.Configuration.GetHoneycombOptions();
+services.AddOpenTelemetry().WithTracing(otelBuilder =>
+{
+    otelBuilder
+        .AddHoneycomb(honeycombOptions)
+        .AddCommonInstrumentations();
+});
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(honeycombOptions.ServiceName));
 
 var app = builder.Build();
 
